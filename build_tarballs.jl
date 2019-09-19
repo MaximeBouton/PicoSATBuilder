@@ -7,41 +7,48 @@ version = v"9.6.0"
 
 # Collection of sources required to build PicoSATBuilder
 sources = [
-    "http://fmv.jku.at/picosat/picosat-965.tar.gz" =>
-    "15169b4f28ba8f628f353f6f75a100845cdef4a2244f101a02b6e5a26e46a754",
+    "http://fmv.jku.at/picosat/picosat-960.tar.gz" =>
+    "edb3184a04766933b092713d0ae5782e4a3da31498629f8bb2b31234a563e817",
 
 ]
 
 # Bash recipe for building across all platforms
 script = raw"""
-cd $WORKSPACE/srcdir
-cd picosat-965/
-./configure.sh --shared
-make
-cd $WORKSPACE/srcdir
-ls
-cd picosat-965/
-ls
-mv *.o $WORKSPACE/destdir
 
+cd $WORKSPACE/srcdir
+cd picosat-960/
+if [[ ${target} == *-apple-* ]]; then 
+    export CC=/opt/x86_64-linux-gnu/tools/clang 
+    export CFLAGS="--target=${target} --sysroot=/opt/${target}/${target}/sys-root"
+    sed -i 's/-soname/-install_name/' makefile.in
+else
+    export CC=/opt/${target}/bin/${target}-gcc
+fi
+
+if [[ ${nbits} == 32 ]]; then
+    ./configure --shared --32
+else 
+    ./configure --shared
+fi
+make
+mv *.so $WORKSPACE/destdir
 """
 
 # These are the platforms we will build for by default, unless further
 # platforms are passed in on the command line
 platforms = [
-    Linux(:x86_64, libc=:glibc)
+    Windows(:i686),
+    Windows(:x86_64),
+    MacOS(),
+    Linux(:x86_64, :glibc),
+    Linux(:i686, :glibc)
 ]
 
 # The products that we will ensure are always built
 products(prefix) = [
-    FileProduct(prefix, "version", :version),
-    FileProduct(prefix, "picomcs", :picomcs),
-    FileProduct(prefix, "main", :main),
-    FileProduct(prefix, "picogcnf", :picogcnf),
-    FileProduct(prefix, "picomus", :picomus),
-    FileProduct(prefix, "picosat", :picosat),
-    FileProduct(prefix, "app", :app)
+    LibraryProduct(prefix, "libpicosat", :libpicosat)
 ]
+
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
