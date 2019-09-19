@@ -31,7 +31,8 @@ else
     ./configure --shared
 fi
 make
-mv *.so $WORKSPACE/destdir
+mkdir $prefix/bin
+mv *.so $prefix/bin/
 """
 
 # These are the platforms we will build for by default, unless further
