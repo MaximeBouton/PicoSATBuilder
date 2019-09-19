@@ -30,17 +30,25 @@ if [[ ${nbits} == 32 ]]; then
 else 
     ./configure --shared
 fi
+
 make
+
+if [[ ${target} == *-mingw* ]]; then
+    mv libpicosat.so libpicosat.dll
+elif [[ ${target} == *-apple-* ]]; then
+    mv libpicosat.so libpicosat.dylib
+fi
+    
 mkdir $prefix/bin
-mv *.so $prefix/bin/
+mv libpicosat.* $prefix/bin/
 """
 
 # These are the platforms we will build for by default, unless further
 # platforms are passed in on the command line
 platforms = [
-    Windows(:i686),
-    Windows(:x86_64),
     MacOS(),
+    Windows(:x86_64),
+    Windows(:i686),
     Linux(:x86_64, :glibc),
     Linux(:i686, :glibc)
 ]
