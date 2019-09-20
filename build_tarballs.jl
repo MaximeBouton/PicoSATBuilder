@@ -38,9 +38,6 @@ if [[ ${target} == *-mingw* ]]; then
 elif [[ ${target} == *-apple-* ]]; then
     mv libpicosat.so libpicosat.dylib
 fi
-    
-mkdir $prefix/bin
-mv libpicosat.* $prefix/bin/
 """
 
 # These are the platforms we will build for by default, unless further
