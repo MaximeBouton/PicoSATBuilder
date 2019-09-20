@@ -39,7 +39,7 @@ elif [[ ${target} == *-apple-* ]]; then
     mv libpicosat.so libpicosat.dylib
 fi
 
-mv libpicosat $prefix
+mv libpicosat* $prefix
 """
 
 # These are the platforms we will build for by default, unless further
